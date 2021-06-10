@@ -15,10 +15,9 @@ fi
 mkdir -p "$TARGET_PATH";
 cd "$TARGET_PATH";
 
-if [ -n "$ASSET" ]; then
+if [ -n "$ASSET_NAME" ]; then
   /gh-dl-release "$RELEASE_OWNER/$RELEASE_REPOSITORY" "$RELEASE_TAG" "$ASSET_NAME" "$FILE" "$TOKEN";
 else
-  wget -O download.tmp https://github.com/${RELEASE_OWNER}/${RELEASE_REPOSITORY}/archive/${RELEASE_TAG}.zip;
-  unzip download.tmp;
-  rm download.tmp;
+  echo "ASSET_NAME not specified.";
+  exit 1;
 fi
