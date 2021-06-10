@@ -1,6 +1,9 @@
 name: 'Download GitHub Release Asset'
 description: 'Download an asset from Github Releases'
 author: 'Ryan Conrad'
+outputs:
+  downloadedAsset:
+    description: The path of the downloaded asset.
 inputs: 
   owner: 
     description: 'The name of the repo owner/org'

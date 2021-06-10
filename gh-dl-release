@@ -55,3 +55,5 @@ if [ "$ASSET_ID" = "null" ]; then
 fi
 
 gh_get_asset $ASSET_ID > "$FILE";
+echo "::set-output name=downloadedAsset::${PWD}/$FILE";
+echo "::debug::Output Set to: ${PWD}/$FILE";
