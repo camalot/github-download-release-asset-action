@@ -1,0 +1,32 @@
+name: 'Download GitHub Release Asset'
+description: 'Download an asset from Github Releases'
+author: 'Ryan Conrad'
+inputs: 
+  owner: 
+    description: 'The name of the repo owner/org'
+    required: true
+  repository:
+    description: The repository from where to download the files.
+    required: true
+  tag:
+    description: 'The version tag of the release'
+    required: true
+  assetName:
+    description: The name of the asset to download. This can be a partial, as it is matched.
+    required: true
+  file:
+    description: The output file name
+    required: true
+  path:
+    description: 'The download directory'
+    default: './'
+    required: false
+  token:
+    description: 'Github token to access private repositories'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'download'
+  color: 'red'
