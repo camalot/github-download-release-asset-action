@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 set -e;
 RELEASE_OWNER="$INPUT_OWNER";
 RELEASE_REPOSITORY="$INPUT_REPOSITORY";

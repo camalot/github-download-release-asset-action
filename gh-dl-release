@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # Based on original work at https://github.com/Legion2/download-release-action/blob/master/gh-dl-release
 #
 # USAGE
