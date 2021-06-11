@@ -1,9 +1,21 @@
 
 FROM alpine:latest
-RUN apk add jq curl
-COPY entrypoint.sh gh-dl-release /
 
-RUN chmod +x /entrypoint.sh; \
-chmod +x /gh-dl-release;
+ENV INPUT_OWNER=
+ENV INPUT_REPOSITORY=
+ENV INPUT_TAG=
+ENV INPUT_ASSETNAME=
+ENV INPUT_FILE=
+ENV INPUT_PATH=
+ENV INPUT_TOKEN=
 
-ENTRYPOINT ["/entrypoint.sh"]
+
+RUN apk add jq curl bash
+RUN mkdir -p /app
+
+COPY app/* app/
+
+RUN chmod +x /app/entrypoint.sh; \
+chmod +x /app/gh-dl-release;
+
+ENTRYPOINT ["/app/entrypoint.sh"]

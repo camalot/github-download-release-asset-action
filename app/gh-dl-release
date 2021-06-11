@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Based on original work at https://github.com/Legion2/download-release-action/blob/master/gh-dl-release
+#
+# USAGE
+# gh-dl-release <org/repo> <version or 'latest'> <filename> [<github token>]
+
+set -e
+
+base_dir=$(dirname "$0");
+source "${base_dir}/shared.sh";
+
+get_opts() {
+	while getopts ":o:r:t:n:f:g:" opt; do
+	  case $opt in
+			o) export opt_repo_owner="$OPTARG";
+			;;
+			r) export opt_repo_name="$OPTARG";
+			;;
+			t) export opt_tag="$OPTARG";
+			;;
+      n) export opt_asset_name="$OPTARG";
+			;;
+      f) export opt_out_file_name="$OPTARG";
+			;;
+      g) export opt_github_token="$OPTARG";
+      ;;
+	    \?) __error "Invalid option -$OPTARG";
+	    ;;
+	  esac;
+	done;
+	return 0;
+};
+
+get_opts "$@";
+
+[[ -p "${opt_repo_owner// }" ]] && __error "'-o' (repo owner) attribute is required.";
+[[ -p "${opt_repo_name// }" ]] && __error "'-o' (repo owner) attribute is required.";
+
+REPO="${opt_repo_owner}/${opt_repo_name}";          # org/repo
+VERSION="${opt_tag:-"latest"}";                     # tag name or the word "latest"
+ASSET_NAME="${opt_asset_name}";                     #
+FILE="${opt_out_file_name}";                        # the name of your release asset file, e.g. build.tar.gz
+TOKEN="${opt_github_token}";                        # 
+GITHUB_API_ENDPOINT="api.github.com"
+
+gh_curl() {
+  if [ -z "$TOKEN" ]; then
+    curl -sL \
+       -H "Accept: application/vnd.github.v3.raw" \
+       "$@"
+  else
+    curl -sL -H "Authorization: token $TOKEN" \
+       -H "Accept: application/vnd.github.v3.raw" \
+       "$@"
+  fi
+}
+
+gh_get_asset() {
+  if [ -z "$TOKEN" ]; then
+    curl -sL -H 'Accept: application/octet-stream' https://$GITHUB_API_ENDPOINT/repos/$REPO/releases/assets/$1
+  else
+    curl -sL -H "Authorization: token $TOKEN" -H 'Accept: application/octet-stream' https://$GITHUB_API_ENDPOINT/repos/$REPO/releases/assets/$1
+  fi
+}
+
+if [ "$VERSION" = "latest" ]; then
+  RELEASE_URL="https://$GITHUB_API_ENDPOINT/repos/$REPO/releases/latest"
+else
+  RELEASE_URL="https://$GITHUB_API_ENDPOINT/repos/$REPO/releases/tags/$VERSION"
+fi
+
+PARSER=".assets | map(select(.name|test(\"$ASSET_NAME\")))[0].id";
+
+ASSET_ID=$(gh_curl $RELEASE_URL | jq "$PARSER");
+if [ "$ASSET_ID" = "null" ]; then
+  __error "ERROR: asset not found '$ASSET_NAME'";
+fi
+
+# make base directory for file
+file_base_dir=$(basename $FILE);
+__debug "create file base directory: ${file_base_dir}";
+mkdir -p $file_base_dir;
+
+gh_get_asset $ASSET_ID > "$FILE";
+
+__set_output "downloadedAsset" "${PWD}/$FILE";
+__debug "Output Set to: ${PWD}/$FILE";

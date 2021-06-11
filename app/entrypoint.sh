@@ -16,7 +16,7 @@ mkdir -p "$TARGET_PATH";
 cd "$TARGET_PATH";
 
 if [ -n "$ASSET_NAME" ]; then
-  /gh-dl-release "$RELEASE_OWNER/$RELEASE_REPOSITORY" "$RELEASE_TAG" "$ASSET_NAME" "$FILE" "$TOKEN";
+  /app/gh-dl-release -o "$RELEASE_OWNER" -r "${RELEASE_REPOSITORY}" -t "${RELEASE_TAG}" -n "$ASSET_NAME" -f "$FILE" -g ${TOKEN};
 else
   echo "ASSET_NAME not specified.";
   exit 1;
